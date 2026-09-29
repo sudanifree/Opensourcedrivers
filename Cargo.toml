@@ -1,0 +1,8 @@
+[package]
+name = "open_source_drivers"
+version = "0.1.0"
+edition = "2021"
+description = "Read-only hardware and driver inventory adapters"
+
+[lib]
+path = "src/lib.rs"
