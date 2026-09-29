@@ -5,7 +5,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
-const { createServer, scanLinuxPci } = require("../server.js");
+const { createServer, parseWindowsPnpOutput, scanLinuxPci } = require("../server.js");
 
 async function createFakeSysfs(t) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "opensourcedrivers-"));
@@ -41,6 +41,25 @@ test("scans PCI IDs and distinguishes bound from indeterminate devices", async (
   assert.equal(devices[0].driver.status, "unknown");
   assert.equal(devices[1].driver.status, "bound");
   assert.equal(devices[1].driver.name, "test_driver");
+});
+
+test("parses Windows PnP records without guessing driver status", () => {
+  const records = [
+    "Ethernet controller\tPCI\\VEN_8086&DEV_1234&SUBSYS_00000000\t e1dexpress \t0",
+    "Unknown device\tPCI\\VEN_1234&DEV_ABCD\t\t28",
+    "Problem device\tUSB\\VID_1234&PID_ABCD\t\t10",
+  ].join("\r\n");
+
+  const devices = parseWindowsPnpOutput(records);
+
+  assert.equal(devices[0].vendor_id, "8086");
+  assert.equal(devices[0].device_id, "1234");
+  assert.deepEqual(devices[0].driver, { status: "bound", name: "e1dexpress" });
+  assert.deepEqual(devices[1].driver, { status: "missing" });
+  assert.deepEqual(devices[2].driver, {
+    status: "unknown",
+    reason: "Windows reports device problem code 10",
+  });
 });
 
 test("serves the web app and a local JSON scan report", async (t) => {

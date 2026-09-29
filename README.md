@@ -1,16 +1,17 @@
 # OpenSourceDrivers
 
 An offline hardware driver inventory tool with a local HTML/CSS/JavaScript UI,
-a Node.js Linux scanner, and a Rust library for native discovery. Erlang/OTP
-coordination is planned.
+a Node.js Linux and Windows scanner, and a Rust library for native discovery.
+Erlang/OTP coordination is planned.
 
 ## Scope
 
-The current dashboard calls a read-only Node.js service bound to loopback; it
-scans Linux PCI sysfs. The Rust library exposes the same initial PCI inventory
-slice. Neither replaces operating-system drivers or bypasses platform
-security. Hardware discovery and driver status come from native
-operating-system interfaces, so each supported platform needs its own adapter.
+The current dashboard calls a read-only Node.js service bound to loopback. It
+scans Linux PCI sysfs and Windows Plug and Play devices through local WMI. The
+Rust library exposes the Linux PCI inventory slice. Neither replaces
+operating-system drivers or bypasses platform security. Hardware discovery and
+driver status come from native operating-system interfaces, so each supported
+platform needs its own adapter.
 
 The first useful release should detect and report before attempting any
 installation. Driver installation is OS- and vendor-specific, often requires
@@ -23,7 +24,7 @@ user action.
 
 | Platform | Practical first-release capability |
 | --- | --- |
-| Windows PCs and servers | Enumerate Plug and Play devices and report problem states using Windows device-management interfaces. |
+| Windows 7 and 10 PCs and servers | Enumerate Plug and Play devices through WMI; only problem code 28 is reported as missing, while other problem states remain unknown. |
 | Linux PCs and servers | Local dashboard scans PCI devices and bindings from sysfs. Unbound devices remain indeterminate unless stronger evidence is available. |
 | macOS | Report hardware and system information available through supported system interfaces; macOS does not expose a general-purpose third-party driver installer. |
 | Android | Limited device inventory where permitted by Android permissions and device policy; an ordinary app cannot install kernel drivers. |
@@ -49,10 +50,13 @@ specific supported OS versions and hardware buses.
 
 ## Run Locally
 
-The local dashboard and Linux PCI scanner use Node.js built-ins only. Start
+The local dashboard and scanners use Node.js built-ins only. Start
 the loopback-only server with `npm start`, then open
-`http://127.0.0.1:4173`. The **Scan this machine** action reads local PCI sysfs;
-the scan remains in the current browser session. Run the server tests with
+`http://127.0.0.1:4173`. The **Scan this machine** action reads local PCI sysfs
+on Linux and queries `Win32_PnPEntity` through Windows PowerShell and WMI on
+Windows. The scan remains in the current browser session. Windows 7 requires
+a compatible Node.js 12 runtime, which is end-of-life; keep the service local
+and use a supported Node.js release on Windows 10. Run the server tests with
 `npm test`.
 
 For a C-based Linux diagnostic, compile `c/driver_scan.c` with
@@ -66,7 +70,8 @@ index contains a match. If either index is unavailable, unbound devices remain
 ## Offline Operation
 
 The local server binds only to `127.0.0.1`, and its API reads local system
-interfaces only. It does not download driver packages or upload inventory.
+interfaces only: Linux sysfs or Windows WMI. It does not download driver
+packages or upload inventory.
 Live scanning requires the local server; opening `web/index.html` directly
 shows the interface but cannot scan devices. Cargo is configured for offline
 dependency resolution, and the Rust crate has no third-party dependencies.
@@ -87,8 +92,9 @@ downloads and installation are not part of the scanner.
 
 ## Development Status
 
-The live dashboard currently scans Linux PCI devices only. The Rust library
-contains a matching read-only adapter, but it is not wired into the Node
-service. Erlang/OTP coordination and Windows, macOS, and mobile adapters are
-not implemented. Linux devices without a driver link are shown as unknown
-because that fact alone does not prove a driver is missing.
+The live dashboard scans Linux PCI devices and Windows Plug and Play devices.
+The Rust library contains the Linux read-only adapter, but it is not wired into
+the Node service. Erlang/OTP coordination and macOS and mobile adapters are not
+implemented. Linux devices without a driver link and Windows devices with
+problem codes other than 28 are shown as unknown rather than presumed to be
+missing a driver.
