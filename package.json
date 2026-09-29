@@ -1,0 +1,10 @@
+{
+  "name": "open-source-drivers-local",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline local driver inventory viewer and Linux scanner",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

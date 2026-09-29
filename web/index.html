@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    >
+    <meta name="theme-color" content="#f3f5f0">
+    <title>OpenSourceDrivers | Device report</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="OpenSourceDrivers home">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>OpenSource<span class="brand-light">Drivers</span></span>
+      </a>
+      <div class="local-status"><span class="status-dot"></span>Offline workspace</div>
+    </header>
+
+    <main class="page-shell">
+      <section class="page-heading" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">DEVICE DIAGNOSTICS <span> / </span> LOCAL REPORT</p>
+          <h1 id="page-title">Hardware report</h1>
+          <p class="heading-detail" id="report-meta">No scan run</p>
+        </div>
+        <div class="heading-actions">
+          <button class="button button-primary" id="scan-button" type="button" disabled>
+            Scan this machine
+          </button>
+        </div>
+      </section>
+
+      <section class="summary" aria-label="Report summary">
+        <div class="summary-item summary-total">
+          <span class="summary-label">Devices</span>
+          <strong id="count-total">—</strong>
+        </div>
+        <div class="summary-item summary-bound">
+          <span class="summary-label">Driver bound</span>
+          <strong id="count-bound">—</strong>
+        </div>
+        <div class="summary-item summary-missing">
+          <span class="summary-label">Missing</span>
+          <strong id="count-missing">—</strong>
+        </div>
+        <div class="summary-item summary-unknown">
+          <span class="summary-label">Unknown</span>
+          <strong id="count-unknown">—</strong>
+        </div>
+      </section>
+
+      <section class="report-panel" aria-label="Device findings">
+        <div class="toolbar">
+          <label class="search-field">
+            <span class="search-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Search devices</span>
+            <input id="search-input" type="search" placeholder="Search name or hardware ID" autocomplete="off" disabled>
+          </label>
+          <label class="filter-field">
+            <span class="visually-hidden">Filter by driver status</span>
+            <select id="status-filter" disabled>
+              <option value="all">All statuses</option>
+              <option value="missing">Missing</option>
+              <option value="unknown">Unknown</option>
+              <option value="bound">Driver bound</option>
+            </select>
+          </label>
+          <span class="result-count" id="result-count" aria-live="polite">No scan yet</span>
+        </div>
+
+        <div class="tree-scroll">
+          <div class="device-tree" id="device-tree" aria-label="Devices grouped by driver status"></div>
+          <div class="empty-state" id="empty-state">
+            <div class="empty-rule" aria-hidden="true"></div>
+            <p class="empty-kicker">NO LOCAL DATA</p>
+            <h2 id="empty-title">No scan results yet</h2>
+            <p id="empty-copy">Start the local app to scan supported hardware on this machine.</p>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <span id="privacy-note">Scanning stays on this device; no data is uploaded.</span>
+        </div>
+      </section>
+      <p class="notice" id="notice" role="status" aria-live="polite"></p>
+    </main>
+  </body>
+</html>
