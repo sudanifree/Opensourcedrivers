@@ -57,7 +57,7 @@ on Linux and queries `Win32_PnPEntity` through Windows PowerShell and WMI on
 Windows. The scan remains in the current browser session. Windows 7 requires
 a compatible Node.js 12 runtime, which is end-of-life; keep the service local
 and use a supported Node.js release on Windows 10. Run the server tests with
-`npm test`.
+`npm test` on Node.js 18 or newer.
 
 For a C-based Linux diagnostic, compile `c/driver_scan.c` with
 `cc -std=c11 -Wall -Wextra -Werror -O2 c/driver_scan.c -o driver-scan` and run
